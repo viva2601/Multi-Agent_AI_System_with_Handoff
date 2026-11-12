@@ -1,4 +1,5 @@
 import json
+import uuid
 
 import psycopg # type: ignore
 import redis # type: ignore
@@ -41,10 +42,17 @@ class SessionStore:
         return {k: v for a, raw in saved.items() if a != agent_name for k, v in json.loads(raw).items()}
 
 
-def save_turn(session_id, agent, user_text, assistant_text):
+def trace_id_for(session_id):
     with psycopg.connect(DATABASE_URL) as conn:
-        conn.execute("INSERT INTO chat_history (session_id, agent, user_text, assistant_text) VALUES (%s, %s, %s, %s)",
-                     (session_id, agent, user_text, assistant_text))
+        row = conn.execute("SELECT trace_id FROM chat_history WHERE session_id = %s AND trace_id IS NOT NULL LIMIT 1",
+                           (session_id,)).fetchone()
+    return row[0] if row else uuid.uuid4()
+
+
+def save_turn(session_id, trace_id, agent, user_text, assistant_text):
+    with psycopg.connect(DATABASE_URL) as conn:
+        conn.execute("INSERT INTO chat_history (session_id, trace_id, agent, user_text, assistant_text) VALUES (%s, %s, %s, %s, %s)",
+                     (session_id, trace_id, agent, user_text, assistant_text))
 
 
 def load_turns(session_id):

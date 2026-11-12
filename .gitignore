@@ -1,2 +1,6 @@
+venv/
+tts_models/
+chroma_db/
 .env
-.ipynb_checkpoints/
+__pycache__/
+*.wav

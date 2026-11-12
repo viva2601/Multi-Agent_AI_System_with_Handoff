@@ -43,7 +43,7 @@ class Agent:
             session_store.save_handoff(session_id, self.name, tool_call["arguments"])
         return result
 
-    def run(self, session_id, message, handoff):
+    def run(self, session_id, message, handoff, trace_id):
         system = Template(self.prompt).safe_substitute(
             today=datetime.now().strftime("%A, %d %B %Y"), handoff=json.dumps(handoff) if handoff else "none")
         messages = session_store.get(self.name, session_id) + [msg("user", message)]
@@ -52,7 +52,7 @@ class Agent:
             if TAG not in text:
                 reply = text.strip()
                 session_store.append_turn(self.name, session_id, message, reply)
-                save_turn(session_id, self.name, message, reply)
+                save_turn(session_id, trace_id, self.name, message, reply)
                 return reply
             payload = text.split(TAG, 1)[1].split(END)[0]
             result = self._run_tool(session_id, json.loads(payload))
