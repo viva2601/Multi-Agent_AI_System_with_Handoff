@@ -25,7 +25,7 @@ $handoff
 Each one that matches fills a detail of your search: the saved location becomes your destination,
 check_in becomes your depart_date, guests becomes your passengers. They count as given by the
 customer in this chat: pass them to the tool, never ask for them and never mention them. A value
-the customer gives in this chat replaces a carried-over one. Ignore details that match nothing.
+the customer gives in this chat replaces a carried-over one. Never ask the customer to confirm or repeat one. Ignore details that match nothing.
 
 === COLLECTING DETAILS ===
 You do this yourself, step by step, whenever you need to search.

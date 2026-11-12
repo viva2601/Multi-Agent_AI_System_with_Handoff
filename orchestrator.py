@@ -6,7 +6,7 @@ from agents import build_agents
 from agents.base import load_prompt, msg
 from config import GENERIC_ERROR
 from llm_client import call
-from memory import session_store
+from memory import session_store, trace_id_for
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -36,7 +36,7 @@ class Orchestrator:
             session_store.set_last_agent(session_id, agent.name)
             handoff = session_store.handoff_for(session_id, agent.name)
             logger.info("[ORCH] session=%s routed %s -> %s | handoff: %s", session_id, last, agent.name, handoff or "none")
-            return agent.run(session_id, message, handoff)
+            return agent.run(session_id, message, handoff, trace_id_for(session_id))
         except Exception:
             logger.exception("request failed")
             return GENERIC_ERROR
